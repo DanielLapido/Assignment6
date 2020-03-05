@@ -53,8 +53,6 @@ ui <- navbarPage("Shiny app",
 
 
 
-
-
 server <- function(input, output){
   
   output$dataTable <- renderTable({
