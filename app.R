@@ -64,11 +64,11 @@ server <- function(input, output){
     report %>%
     leaflet() %>%
     addTiles() %>%
-    addCircles()
+    addMarkers(~Long, ~Lat, popup = ~as.character(`Country/Region`), label = ~as.character(`Country/Region`))
 
   })
   
-  output$esTable <- DT::renderDT(head(report))
+  output$esTable <- DT::renderDT(head(report[order(report$Confirmed, decreasing = TRUE),]))
  
   
 }
