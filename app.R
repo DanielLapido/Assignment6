@@ -32,7 +32,7 @@ recovered2 <-  reshape2::melt(Recovered, id.vars = colnames(Recovered)[1:4])
 
 
 mapPanel <- tabPanel("map",
-                     leafletOutput('map', width = '100%', height = '300px'),
+                     leafletOutput('map', width = '100%', height = '500px'),
                      DT::DTOutput("esTable")
 )
 
@@ -64,7 +64,14 @@ server <- function(input, output){
     report %>%
     leaflet() %>%
     addTiles() %>%
-    addMarkers(~Long, ~Lat, popup = ~as.character(`Country/Region`), label = ~as.character(`Country/Region`))
+    addCircleMarkers(
+      ~Long,
+      ~Lat,
+      radius = ~ if(Confirmed > 0) log(Confirmed) + 5,
+      fillColor = "red",color = 'red',
+      stroke = FALSE, fillOpacity = 0.5,
+      popup = ~as.character(`Country/Region`),
+      label = ~as.character(`Country/Region`))
 
   })
   
