@@ -43,7 +43,6 @@ dataPanel <- tabPanel("Data",
 
 
 ui <- navbarPage("Shiny app",
-                 dataPanel,
                  mapPanel,
                  inverse=TRUE
                  
@@ -64,13 +63,14 @@ server <- function(input, output){
     report %>%
     leaflet() %>%
     addTiles() %>%
+    setView(25, 10, zoom = 2) %>%
     addCircleMarkers(
       ~Long,
       ~Lat,
-      radius = ~ if(Confirmed > 0) log(Confirmed) + 5,
+      radius = ~  log(Confirmed) + 5,
       fillColor = "red",color = 'red',
       stroke = FALSE, fillOpacity = 0.5,
-      popup = ~as.character(`Country/Region`),
+      popup = ~ paste("<font color=\"black\"><b>",toupper(`Country/Region`),"<br>","<font color=\"#484848\">", "Confirmed:","<font color=\"orange\"><b>",Confirmed,"<br>","<font color=\"#484848\">","Recovered:", "<font color=\"#00ff00\"><b>",Recovered,"<font color=\"#484848\">", "<br>","Deaths:","<font color=\"#FF0000\"><b>",Deaths ),
       label = ~as.character(`Country/Region`))
 
   })
