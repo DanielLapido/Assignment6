@@ -19,6 +19,7 @@ Recovered <- readr::read_csv("https://raw.githubusercontent.com/CSSEGISandData/C
 
 
 report <- cbind(Confirmed[,c(1,2,3,4,ncol(Confirmed))], Deaths[,ncol(Deaths)], Recovered[,ncol(Recovered)] )
+report$`Province/State`[is.na(report$`Province/State`)]=""
 
 #names(report)[c(3,4,5,6,7)] <-c("lat","long","Confirmed", "Deaths", "Recovered")
 names(report)[c(5,6,7)] <-c("Confirmed", "Deaths", "Recovered")
@@ -63,22 +64,14 @@ server <- function(input, output){
     report %>%
     leaflet() %>%
     addTiles() %>%
-<<<<<<< HEAD
     setView(25, 10, zoom = 2) %>%
-=======
-    setView( 5, 10, zoom = 2) %>%
->>>>>>> 1453597ea9a5eb04f13c49a8f272e93e4fc8ee76
     addCircleMarkers(
       ~Long,
       ~Lat,
       radius = ~  log(Confirmed) + 5,
       fillColor = "red",color = 'red',
       stroke = FALSE, fillOpacity = 0.5,
-<<<<<<< HEAD
-      popup = ~ paste("<font color=\"black\"><b>",toupper(`Country/Region`),"<br>","<font color=\"#484848\">", "Confirmed:","<font color=\"orange\"><b>",Confirmed,"<br>","<font color=\"#484848\">","Recovered:", "<font color=\"#00ff00\"><b>",Recovered,"<font color=\"#484848\">", "<br>","Deaths:","<font color=\"#FF0000\"><b>",Deaths ),
-=======
-      popup = ~ paste("<font color=\"black\"><b>",`Country/Region`,"<br>","<font color=\"#484848\">", "Confirmed:","<font color=\"orange\"><b>",Confirmed,"<br>","<font color=\"#484848\">","Recovered:", "<font color=\"#00ff00\"><b>",Recovered,"<font color=\"#484848\">", "<br>","Deaths:","<font color=\"#FF0000\"><b>",Deaths ),
->>>>>>> 1453597ea9a5eb04f13c49a8f272e93e4fc8ee76
+      popup = ~ paste("<font color=\"black\"><b>",`Province/State`,"\n",toupper(`Country/Region`),"<br>","<font color=\"#484848\">", "Confirmed:","<font color=\"orange\"><b>",Confirmed,"<br>","<font color=\"#484848\">","Recovered:", "<font color=\"#00ff00\"><b>",Recovered,"<font color=\"#484848\">", "<br>","Deaths:","<font color=\"#FF0000\"><b>",Deaths ),
       label = ~as.character(`Country/Region`))
 
   })
