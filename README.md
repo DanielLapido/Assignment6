@@ -3,47 +3,23 @@
 The 2019–20 coronavirus pandemic is an ongoing pandemic of coronavirus disease 2019 (COVID-19) caused by the severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2). The disease was first identified in Wuhan, Hubei, China in December 2019. On 11 March 2020, the World Health Organization declared the outbreak a pandemic.
 
 The aim of this app is to display the latest worldwide information about the virus, and show its temporal evolution in each country.
-Plenty of webpages about this topic already exist. For example:
+It is inspired on plenty of webpages about this topic which already exist. For example:
 
 -  [Channel news asia](https://infographics.channelnewsasia.com/wuhan/gmap.html)
 -  [Coronavirus COVID-19 Global Cases by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University (JHU)](https://www.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6)
 
-The data is gathered from the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University (JHU) and it is updated at least once a day.
+The data is gathered from the [Center for Systems Science and Engineering (CSSE) at Johns Hopkins University (JHU)](https://systems.jhu.edu/research/public-health/ncov/) and it is updated at least once a day.
+
+## Table of Contents:
+
+- Latest information: Displays the total number of confirmed, recovered and deaths cases worldwide. It also allows to click on each country and a pop up will show the information for that country.
+
+- Evolution of the virus: A temporal world map animation is implemented so that not only the latest information is available but also the daily information of the virus since the outbreak.
 
 
+## How to run the app:
 
-You can use the [editor on GitHub](https://github.com/DanielLapido/Assignment6/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+There are two ways of visualizing the app:
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/DanielLapido/Assignment6/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+- The first one is by just clicking in my shinyapps.io [link](https://daniellapidomartinez.shinyapps.io/Assignment6/)
+- By running runGitHub("Assignment6","DanielLapido") in R
