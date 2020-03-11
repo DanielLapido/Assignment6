@@ -32,19 +32,25 @@ deaths2 <- reshape2::melt(Deaths, id.vars = colnames(Deaths)[1:4])
 recovered2 <-  reshape2::melt(Recovered, id.vars = colnames(Recovered)[1:4])
 
 
-mapPanel <- tabPanel("map",
+mapPanel <- tabPanel("Interactive Map",
                      leafletOutput('map', width = '100%', height = '500px'),
                      DT::DTOutput("esTable")
 )
 
 
-dataPanel <- tabPanel("Data", 
-                      tableOutput("dataTable")
+dataPanel <- tabPanel("Data explorer", 
+                      DT::DTOutput("dataTable")
+)
+
+evolPanel <- tabPanel("Evolution", 
+                      leafletOutput('evomap', width = '100%', height = '500px')
 )
 
 
-ui <- navbarPage("Shiny app",
+ui <- navbarPage("COVID19",
                  mapPanel,
+                 dataPanel,
+                 evolPanel,
                  inverse=TRUE
                  
 )
@@ -55,9 +61,7 @@ ui <- navbarPage("Shiny app",
 
 server <- function(input, output){
   
-  output$dataTable <- renderTable({
-    head(report)
-  })
+  output$dataTable <- DT::renderDT(report[order(report$Confirmed, decreasing = TRUE),])
   
   output$map <- renderLeaflet({
     
@@ -76,7 +80,7 @@ server <- function(input, output){
 
   })
   
-  output$esTable <- DT::renderDT(head(report[order(report$Confirmed, decreasing = TRUE),]))
+  output$esTable <- DT::renderDT(report[order(report$Confirmed, decreasing = TRUE),])
  
   
 }
