@@ -7,8 +7,10 @@ library(plotly)
 library(dplyr)
 library(ggplot2)
 library(ggthemes)
+library(shinyWidgets)
 library(leaflet)
 library(extrafont)
+library(shinydashboard)
 
 
 #########################################################################
@@ -22,17 +24,14 @@ Deaths <-  readr::read_csv("https://raw.githubusercontent.com/CSSEGISandData/COV
 
 Recovered <- readr::read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv")
 
-
 report <- cbind(Confirmed[,c(1,2,3,4,ncol(Confirmed))], Deaths[,ncol(Deaths)], Recovered[,ncol(Recovered)] )
 report$`Province/State`[is.na(report$`Province/State`)]=""
 
-#names(report)[c(3,4,5,6,7)] <-c("lat","long","Confirmed", "Deaths", "Recovered")
+
 names(report)[c(5,6,7)] <-c("Confirmed", "Deaths", "Recovered")
 
-#date = as.POSIXct(paste("0",as.character(conf2$variable),sep=""), format = "%m/%e/%y")
+
 date = as.Date(names(Confirmed)[c(5:ncol(Confirmed))],  format = "%m/%e/%y")
-#date = names(Confirmed)[c(5:ncol(Confirmed))]
-#date = as.POSIXct(paste("0",as.character(conf2$variable),sep=""), format = "%m/%e/%y")
 
 
 conf2 <- reshape2::melt(Confirmed, id.vars = colnames(Confirmed)[1:4])
@@ -51,10 +50,23 @@ recovered2 <-  reshape2::melt(Recovered, id.vars = colnames(Recovered)[1:4])
 globalreport = cbind(conf2, deaths2$value, recovered2$value)
 names(globalreport)[c(6,7,8)] <-c("Confirmed", "Deaths", "Recovered")
 
+
+
 #########################################################################
 #Navbar Panels
 #########################################################################
 
+
+
+headerRow1 <- div(id = "header",useShinyjs(),
+                  box("Last update:",dates[length(dates)], fill = TRUE, color="olive")
+)
+
+# headerRow1 <- fluidRow(id = "header",useShinyjs(),
+#                        valueBox(sum(report$Confirmed), "Confirmed", icon = icon("credit-card")),
+#                        valueBox(sum(report$Deaths), "Deaths", icon = icon("credit-card")),
+#                        valueBoxOutput("Recovered"),
+# )
 
 # headerRow = div(id = "header",useShinyjs(),
 #                  selectInput("selYear",
@@ -71,7 +83,14 @@ names(globalreport)[c(6,7,8)] <-c("Confirmed", "Deaths", "Recovered")
 
 
 mapPanel <- tabPanel("Interactive Map",
+                     fluidRow(box(width = 12,
+                                  infoBox("Confirmed", sum(report$Confirmed), fill = TRUE, color="red"),
+                                  infoBox("Recovered", sum(report$Recovered), fill = TRUE, color="green"),
+                                  infoBox("Deaths", sum(report$Deaths), fill = TRUE, color="black")
+                                  
+                     )),
                      leafletOutput('map', width = '100%', height = '500px'),
+                     headerRow1,
                      DT::DTOutput("esTable")
 )
 
@@ -97,7 +116,7 @@ evolPanel <- tabPanel("Evolution",
                       sliderInput("time", "date:",
                                   min(date),
                                   max(date),
-                                  value = max(date),
+                                  value = min(date),
                                   timeFormat="%m/%e/%y",
                                   step=3,
                                   animate=T),
@@ -110,7 +129,10 @@ ui <- navbarPage("COVID19",
                  mapPanel,
                  dataPanel,
                  evolPanel,
-                 inverse=TRUE
+                 inverse=TRUE,
+                 header = tagList(
+                   useShinydashboard()
+                 )
                  
 )
 
@@ -129,22 +151,23 @@ server <- function(input, output){
   #     shinyjs::hide("header")
   #   }
   # })
-  # 
+
   output$dataTable <- DT::renderDT(report[order(report$Confirmed, decreasing = TRUE),])
   
   output$map <- renderLeaflet({
     
     report %>%
+    filter(Confirmed > 0) %>%
     leaflet() %>%
     addTiles() %>%
     setView(25, 10, zoom = 2) %>%
     addCircleMarkers(
       ~Long,
       ~Lat,
-      radius = ~  log(Confirmed) + 5,
+      radius = ~  log(Confirmed, base =2),
       fillColor = "red",color = 'red',
       stroke = FALSE, fillOpacity = 0.5,
-      popup = ~ paste("<font color=\"black\"><b>",toupper(`Country/Region`),"<br>",`Province/State`,"<br>","<font color=\"#484848\">", "Confirmed:","<font color=\"orange\"><b>",Confirmed,"<br>","<font color=\"#484848\">","Recovered:", "<font color=\"#00ff00\"><b>",Recovered,"<font color=\"#484848\">", "<br>","Deaths:","<font color=\"#FF0000\"><b>",Deaths ),
+      popup = ~ paste("<font color=\"black\"><b>",toupper(`Country/Region`),"<br>",`Province/State`,"<br>","<font color=\"#484848\">", "Confirmed:","<font color=\"#FF0000\"><b>",Confirmed,"<br>","<font color=\"#484848\">","Recovered:", "<font color=\"#00ff00\"><b>",Recovered,"<font color=\"#484848\">", "<br>","Deaths:","<font color=\"black\"><b>",Deaths ),
       label = ~as.character(`Country/Region`))
 
   })
@@ -154,8 +177,9 @@ server <- function(input, output){
   
   points <- reactive({
     globalreport %>%
-      filter(variable == input$time)
+      filter(variable == input$time & Confirmed > 0)
   })
+
   
   #output$evolTable = DT::renderDT(points())
   
@@ -173,15 +197,16 @@ server <- function(input, output){
       addCircleMarkers(
         ~Long,
         ~Lat,
-        radius = ~  log(Confirmed),
+        radius = ~  log(Confirmed, base=2),
         fillColor = "red",color = 'red',
         stroke = FALSE, fillOpacity = 0.5,
-        popup = ~ paste("<font color=\"black\"><b>",toupper(`Country/Region`),"<br>",`Province/State`,"<br>","<font color=\"#484848\">", "Confirmed:","<font color=\"orange\"><b>",Confirmed,"<br>","<font color=\"#484848\">","Recovered:", "<font color=\"#00ff00\"><b>",Recovered,"<font color=\"#484848\">", "<br>","Deaths:","<font color=\"#FF0000\"><b>",Deaths ),
+        popup = ~ paste("<font color=\"black\"><b>",toupper(`Country/Region`),"<br>",`Province/State`,"<br>","<font color=\"#484848\">", "Confirmed:","<font color=\"#FF0000\"><b>",Confirmed,"<br>","<font color=\"#484848\">","Recovered:", "<font color=\"#00ff00\"><b>",Recovered,"<font color=\"#484848\">", "<br>","Deaths:","<font color=\"black\"><b>",Deaths ),
         label = ~as.character(`Country/Region`))
     
   })
- 
   
+
+
 }
 
 
