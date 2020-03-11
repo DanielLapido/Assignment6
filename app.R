@@ -43,9 +43,13 @@ conf2 <- reshape2::melt(Confirmed, id.vars = colnames(Confirmed)[1:4])
 dates = as.POSIXct(paste("0",as.character(conf2$variable),sep=""), format = "%m/%e/%y")
 conf2$variable = dates
 
+
 deaths2 <- reshape2::melt(Deaths, id.vars = colnames(Deaths)[1:4])
 
 recovered2 <-  reshape2::melt(Recovered, id.vars = colnames(Recovered)[1:4])
+
+globalreport = cbind(conf2, deaths2$value, recovered2$value)
+names(globalreport)[c(6,7,8)] <-c("Confirmed", "Deaths", "Recovered")
 
 #########################################################################
 #Navbar Panels
@@ -95,10 +99,10 @@ evolPanel <- tabPanel("Evolution",
                                   max(date),
                                   value = max(date),
                                   timeFormat="%m/%e/%y",
-                                  step=1,
+                                  step=3,
                                   animate=T),
-                      DT::DTOutput("evolTable")
-                      #leafletOutput('evomap', width = '100%', height = '500px')
+                      #DT::DTOutput("evolTable"),
+                      leafletOutput('evomap', width = '100%', height = '500px')
 )
 
 
@@ -149,16 +153,33 @@ server <- function(input, output){
   
   
   points <- reactive({
-    conf2 %>%
+    globalreport %>%
       filter(variable == input$time)
   })
   
-  output$evolTable = DT::renderDT(points())
+  #output$evolTable = DT::renderDT(points())
   
   # output$mymap <- renderLeaflet({
   #   leaflet() %>%
   #     addMarkers(data = points(),popup=as.character(points()$a))
   # })
+  
+  output$evomap <- renderLeaflet({
+    
+    points() %>%
+      leaflet() %>%
+      addTiles() %>%
+      setView(25, 10, zoom = 2) %>%
+      addCircleMarkers(
+        ~Long,
+        ~Lat,
+        radius = ~  log(Confirmed),
+        fillColor = "red",color = 'red',
+        stroke = FALSE, fillOpacity = 0.5,
+        popup = ~ paste("<font color=\"black\"><b>",toupper(`Country/Region`),"<br>",`Province/State`,"<br>","<font color=\"#484848\">", "Confirmed:","<font color=\"orange\"><b>",Confirmed,"<br>","<font color=\"#484848\">","Recovered:", "<font color=\"#00ff00\"><b>",Recovered,"<font color=\"#484848\">", "<br>","Deaths:","<font color=\"#FF0000\"><b>",Deaths ),
+        label = ~as.character(`Country/Region`))
+    
+  })
  
   
 }
