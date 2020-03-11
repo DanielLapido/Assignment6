@@ -5,8 +5,8 @@ The 2019–20 coronavirus pandemic is an ongoing pandemic of coronavirus disease
 The aim of this app is to display the latest worldwide information about the virus, and show its temporal evolution in each country.
 Plenty of webpages about this topic already exist. For example:
 
--  https://infographics.channelnewsasia.com/wuhan/gmap.html
--  https://www.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
+-  [Channel news asia](https://infographics.channelnewsasia.com/wuhan/gmap.html)
+-  [Coronavirus COVID-19 Global Cases by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University (JHU)](https://www.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6)
 
 The data is gathered from the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University (JHU) and it is updated at least once a day.
 
