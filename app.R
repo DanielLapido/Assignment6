@@ -48,8 +48,11 @@ deaths2 <- reshape2::melt(Deaths, id.vars = colnames(Deaths)[1:4])
 recovered2 <-  reshape2::melt(Recovered, id.vars = colnames(Recovered)[1:4])
 
 globalreport = cbind(conf2, deaths2$value, recovered2$value)
-names(globalreport)[c(6,7,8)] <-c("Confirmed", "Deaths", "Recovered")
+names(globalreport)[c(5,6,7,8)] <-c("Date","Confirmed", "Deaths", "Recovered")
+globalreport$`Country/Region`=as.factor(globalreport$`Country/Region`)
 
+
+factors = levels(globalreport$`Country/Region`)
 
 
 #########################################################################
@@ -84,9 +87,24 @@ evolPanel <- tabPanel("Evolution",
                                   timeFormat="%m/%e/%y",
                                   step=3,
                                   animate=T),
-                      #DT::DTOutput("evolTable"),
                       leafletOutput('evomap', width = '100%', height = '500px'),
-                      sliderInput("slider", "Slider", 1, 100, 50),
+                      selectInput("country",
+                                  "Select country:",
+                                  multiple = FALSE,
+                                  choices = factors,
+                                  selected = "Spain"),
+                      plotly::plotlyOutput("PlotlyData")
+)
+
+
+dataPanel <- tabPanel("Data Explorer",
+                      selectInput("dates",
+                                  "Select date:",
+                                  multiple = TRUE,
+                                  choices = dates,
+                                  selected = dates[length(dates)]),
+                      
+                      DT::DTOutput("evolTable"),
 )
 
 
@@ -94,8 +112,8 @@ ui <- navbarPage("COVID19",
                  theme = shinytheme("cerulean"),
                  mapPanel,
                  evolPanel,
+                 dataPanel,
                  inverse=TRUE,
-                 downloadButton("report", "Generate report"),
                  header = tagList(
                    useShinydashboard()
                  )
@@ -110,6 +128,11 @@ ui <- navbarPage("COVID19",
 #########################################################################
 
 server <- function(input, output){
+  
+  global_filtered <- reactive({
+    req(input$country)
+    globalreport %>%  filter (`Country/Region` %in% input$country)
+  })
   
   output$dataTable <- DT::renderDT(report[order(report$Confirmed, decreasing = TRUE),])
   
@@ -134,7 +157,7 @@ server <- function(input, output){
   
   points <- reactive({
     globalreport %>%
-      filter(variable == input$time & Confirmed > 0)
+      filter(Date == input$time & Confirmed > 0)
   })
 
   
@@ -154,6 +177,47 @@ server <- function(input, output){
         label = ~as.character(`Country/Region`))
     
   })
+  
+  output$PlotlyData = plotly::renderPlotly({ 
+    
+    p = global_filtered() %>%
+      ggplot(aes(x=Date, y=Confirmed)) +
+      geom_line(color="red") + ylab("Number of confirmed cases")+
+      xlab("Date")+ theme_minimal()
+    
+    fig1 = ggplotly(p)
+    
+    q = global_filtered() %>%
+      ggplot(aes(x=Date, y=Recovered)) +
+      geom_line(color="green") + ylab("Number of recovered people")+
+      xlab("Date")+ theme_minimal()
+    
+    fig2=ggplotly(q)
+    
+    r = global_filtered() %>%
+      ggplot(aes(x=Date, y=Deaths)) +
+      geom_line(color="black") + ylab("Number of deaths")+
+      xlab("Date")+ theme_minimal()
+    
+    fig3=ggplotly(r)
+    
+    s = subplot(fig1, fig2,fig3)
+    
+    s %>% layout(annotations = list(
+      list(x = 0.1 , y = 1.05, text = "Evolution of confirmed cases", showarrow = F, xref='paper', yref='paper'),
+      list(x = 0.5 , y = 1.05, text = "Evolution of number of recoveries", showarrow = F, xref='paper', yref='paper'),      
+      list(x = 0.9 , y = 1.05, text = "Evolution of number of deaths", showarrow = F, xref='paper', yref='paper'))
+    )
+    
+    
+  })
+  
+  data <- reactive({
+    globalreport %>%
+      filter(Date == input$dates)
+  })
+  
+  output$evolTable <- DT::renderDT(data()[order(data()$Confirmed, decreasing = TRUE),])
   
 
 }
