@@ -8,7 +8,9 @@ It is inspired on plenty of webpages about this topic which already exist. For e
 -  [Channel news asia](https://infographics.channelnewsasia.com/wuhan/gmap.html)
 -  [Coronavirus COVID-19 Global Cases by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University (JHU)](https://www.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6)
 
-The data is gathered from the [Center for Systems Science and Engineering (CSSE) at Johns Hopkins University (JHU)](https://systems.jhu.edu/research/public-health/ncov/) and it is updated at least once a day.
+The data is gathered from the [Center for Systems Science and Engineering (CSSE) at Johns Hopkins University (JHU)](https://systems.jhu.edu/research/public-health/ncov/). 
+
+**The data about recoveries stopped being updated. For that reason the app was splitted into the file 'app' which contains the data until 23rd of March, and the file 'newest_app' with the most recent data but without the number of recoveries**
 
 ## Table of Contents:
 
