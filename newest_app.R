@@ -32,6 +32,9 @@ report$`Province/State`[is.na(report$`Province/State`)]=""
 
 names(report)[c(5,6)] <-c("Confirmed", "Deaths")
 
+report$Confirmed[is.na(report$Confirmed)]=0
+report$Deaths[is.na(report$Deaths)]=0
+
 
 date = as.Date(names(Confirmed)[c(5:ncol(Confirmed))],  format = "%m/%e/%y")
 
@@ -39,7 +42,7 @@ date = as.Date(names(Confirmed)[c(5:ncol(Confirmed))],  format = "%m/%e/%y")
 conf2 <- reshape2::melt(Confirmed, id.vars = colnames(Confirmed)[1:4])
 
 
-dates = as.POSIXct(paste("0",as.character(conf2$variable),sep=""), format = "%m/%e/%y")
+dates = as.POSIXct(as.character(conf2$variable), format="%m/%e/%y")
 conf2$variable = dates
 
 
@@ -147,7 +150,7 @@ server <- function(input, output){
       radius = ~  log(Confirmed, base =2),
       fillColor = "red",color = 'red',
       stroke = FALSE, fillOpacity = 0.5,
-      popup = ~ paste("<font color=\"black\"><b>",toupper(`Country/Region`),"<br>",`Province/State`,"<br>","<font color=\"#484848\">", "Confirmed:","<font color=\"#FF0000\"><b>",Confirmed,"<br>","<font color=\"#484848\">", "<br>","Deaths:","<font color=\"black\"><b>",Deaths ),
+      popup = ~ paste("<font color=\"black\"><b>",toupper(`Country/Region`),"<br>",`Province/State`,"<br>","<font color=\"#484848\">", "Confirmed:","<font color=\"#FF0000\"><b>",Confirmed,"<font color=\"#484848\">", "<br>","Deaths:","<font color=\"black\"><b>",Deaths ),
       label = ~as.character(`Country/Region`))
 
   })
@@ -171,7 +174,7 @@ server <- function(input, output){
         radius = ~  log(Confirmed, base=2),
         fillColor = "red",color = 'red',
         stroke = FALSE, fillOpacity = 0.5,
-        popup = ~ paste("<font color=\"black\"><b>",toupper(`Country/Region`),"<br>",`Province/State`,"<br>","<font color=\"#484848\">", "Confirmed:","<font color=\"#FF0000\"><b>",Confirmed,"<br>","<font color=\"#484848\">", "<br>","Deaths:","<font color=\"black\"><b>",Deaths ),
+        popup = ~ paste("<font color=\"black\"><b>",toupper(`Country/Region`),"<br>",`Province/State`,"<br>","<font color=\"#484848\">", "Confirmed:","<font color=\"#FF0000\"><b>",Confirmed,"<font color=\"#484848\">", "<br>","Deaths:","<font color=\"black\"><b>",Deaths ),
         label = ~as.character(`Country/Region`))
     
   })
