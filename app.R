@@ -32,6 +32,9 @@ report$`Province/State`[is.na(report$`Province/State`)]=""
 
 names(report)[c(5,6,7)] <-c("Confirmed", "Deaths", "Recovered")
 
+report$Confirmed[is.na(report$Confirmed)]=0
+report$Deaths[is.na(report$Deaths)]=0
+report$Recovered[is.na(report$Recovered)]=0
 
 date = as.Date(names(Confirmed)[c(5:ncol(Confirmed))],  format = "%m/%e/%y")
 
