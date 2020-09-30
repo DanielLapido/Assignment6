@@ -24,4 +24,4 @@ The data was gathered from the [Center for Systems Science and Engineering (CSSE
 There are two ways of visualizing the app:
 
 - The first one is by just clicking in my [shinyapps.io  link](https://daniellapidomartinez.shinyapps.io/Assignment6/)
-- By running runGitHub("Assignment6","DanielLapido") in R
+- By running runGitHub("Covid19_shinyapp","DanielLapido") in R
