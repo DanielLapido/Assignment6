@@ -1,5 +1,7 @@
 ## COVID 19 Shiny app 
 
+https://daniellapido.github.io/Covid19_shinyapp/
+
 The 2019–20 coronavirus pandemic is an ongoing pandemic of coronavirus disease 2019 (COVID-19) caused by the severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2). The disease was first identified in Wuhan, Hubei, China in December 2019. On 11 March 2020, the World Health Organization declared the outbreak a pandemic.
 
 **The data about recoveries stopped being updated. For that reason the app was splitted into the file 'app' which contains the data until 23rd of March, and the file 'newest_app' with the most recent data but without the number of recoveries**
